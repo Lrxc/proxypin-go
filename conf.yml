@@ -1,0 +1,13 @@
+system:
+  host: 127.0.0.1
+  port: 10086
+
+rule:
+  - name: dbf
+    enable: true
+    source: https://192.168.3.103:443/api
+    target: http://127.0.0.1:9999/api
+  - name: baidu
+    enable: true
+    source: https://www.baidu.com
+    target: https://www.bing.com
