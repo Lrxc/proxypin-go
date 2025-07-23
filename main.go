@@ -1,15 +1,16 @@
 package main
 
 import (
-	"proxypin-go/internal"
+	"proxypin-go/internal/config"
+	"proxypin-go/internal/core"
+	"proxypin-go/internal/system"
 )
 
 func init() {
-	internal.InitConfig()
+	config.InitConfig()
+	system.SysProxy()
 }
 
 func main() {
-	internal.SysProxy()
-
-	internal.StartServer()
+	core.StartServer()
 }

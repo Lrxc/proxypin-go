@@ -1,17 +1,18 @@
-package internal
+package core
 
 import (
 	"fmt"
 	"github.com/elazarl/goproxy"
 	"net/http"
 	"net/url"
+	"proxypin-go/internal/config"
 	"strings"
 )
 
 func ReqHandler(r *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {
 	fmt.Printf("req: %s %s\n", r.Method, r.URL.String())
 
-	for _, s := range Conf.Rule {
+	for _, s := range config.Conf.Rule {
 		if !s.Enable {
 			continue
 		}

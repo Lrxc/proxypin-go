@@ -1,15 +1,20 @@
-package internal
+package system
 
 import (
 	"fmt"
 	"github.com/Trisia/gosysproxy"
 	"os"
 	"os/signal"
+	"proxypin-go/internal/config"
 )
 
 func SysProxy() {
+	if !config.Conf.System.AutoEnable {
+		return
+	}
+
 	// 启动时设置系统代理
-	addr := fmt.Sprintf("%s:%s", Conf.System.Host, Conf.System.Port)
+	addr := fmt.Sprintf("%s:%s", config.Conf.System.Host, config.Conf.System.Port)
 	if err := gosysproxy.SetGlobalProxy(addr); err != nil {
 		fmt.Errorf("system proxy err: %v", err)
 	}

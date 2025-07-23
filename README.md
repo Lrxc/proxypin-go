@@ -12,7 +12,7 @@ proxypin-go
    <img src="docs/sys_proxy.png" alt="sys_proxy.png" style="zoom: 50%;" />
 
 
-# 自己生成证书
+# 自己生成证书[可选]
 ```shell
 #生成私钥
 openssl genrsa -out server.key 2048

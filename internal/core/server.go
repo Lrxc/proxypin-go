@@ -1,4 +1,4 @@
-package internal
+package core
 
 import (
 	"crypto/tls"
@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	resources "proxypin-go/cert"
+	"proxypin-go/internal/config"
 )
 
 func StartServer() {
@@ -28,7 +29,7 @@ func StartServer() {
 	// 相应
 	proxy.OnResponse().DoFunc(ResHandler)
 
-	addr := fmt.Sprintf("%s:%s", Conf.System.Host, Conf.System.Port)
+	addr := fmt.Sprintf("%s:%s", config.Conf.System.Host, config.Conf.System.Port)
 	fmt.Println("server listen: ", addr)
 	fmt.Println("start successful!")
 	log.Fatal(http.ListenAndServe(addr, proxy))

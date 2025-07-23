@@ -1,4 +1,4 @@
-package internal
+package config
 
 import (
 	"fmt"
@@ -8,8 +8,9 @@ import (
 
 type Config struct {
 	System struct {
-		Host string
-		Port string
+		Host       string
+		Port       string
+		AutoEnable bool `mapstructure:"auto_enable"`
 	}
 	Rule []struct {
 		Enable bool
@@ -23,7 +24,7 @@ var Conf = new(Config)
 
 // 初始化环境参数
 func InitConfig() {
-	viper.AddConfigPath("../") //配置文件路径
+	viper.AddConfigPath("../../") //配置文件路径
 	viper.SetConfigFile("conf.yml")
 	err := viper.ReadInConfig()
 	if err != nil {
