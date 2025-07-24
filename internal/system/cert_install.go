@@ -1,32 +1,87 @@
 package system
 
 import (
+	"bytes"
+	"crypto/x509"
+	"encoding/pem"
 	"fmt"
+	"io/ioutil"
 	"os/exec"
+	"proxypin-go/internal/util"
 	"runtime"
 )
 
-// 安装证书到系统
+// 检查证书是否已存在于根证书存储中
+func CheckExistCert(certPath string) (bool, error) {
+	certData, err := ioutil.ReadFile(certPath)
+	if err != nil {
+		return false, fmt.Errorf("读取证书文件失败: %v", err)
+	}
+
+	block, _ := pem.Decode(certData)
+	if block == nil {
+		return false, fmt.Errorf("解析PEM格式证书失败")
+	}
+
+	cert, err := x509.ParseCertificate(block.Bytes)
+	if err != nil {
+		return false, fmt.Errorf("解析证书失败: %v", err)
+	}
+
+	switch runtime.GOOS {
+	case "windows":
+		// Windows - 使用 certutil 检查证书
+		cmd := exec.Command("certutil", "-verifystore", "Root")
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			return false, fmt.Errorf("检查证书存储失败: %v", err)
+		}
+
+		fingerprint := util.GetSHA1(cert)
+		return bytes.Contains(output, []byte(fingerprint)), nil
+
+	case "darwin": // macOS
+		// macOS - 使用 security 检查证书
+		cmd := exec.Command("security", "find-certificate", "-c", cert.Subject.CommonName, "-a", "/Library/Keychains/System.keychain")
+		err := cmd.Run()
+		return err == nil, nil
+
+	case "linux":
+		// Linux - 检查证书目录
+		cmd := exec.Command("ls", "/usr/local/share/ca-certificates/")
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			return false, fmt.Errorf("检查证书目录失败: %v", err)
+		}
+		return bytes.Contains(output, []byte(certPath)), nil
+
+	default:
+		return false, fmt.Errorf("不支持的操作系统: %s", runtime.GOOS)
+	}
+}
+
 func InstallCert(certPath string) error {
 	var cmd *exec.Cmd
 
 	switch runtime.GOOS {
 	case "windows":
-		cmd = exec.Command("certutil", "-addstore", "Root", certPath)
-	case "darwin": // macOS
-		cmd = exec.Command("security", "add-trusted-cert", "-d", "-r", "trustRoot", "-k", "/Library/Keychains/System.keychain", certPath)
+		cmd = exec.Command("certutil", "-addstore", "-f", "Root", certPath)
+	case "darwin":
+		cmd = exec.Command("sudo", "security", "add-trusted-cert", "-d", "-r", "trustRoot", "-k", "/Library/Keychains/System.keychain", certPath)
 	case "linux":
-		// Linux 有多种发行版，这里以Ubuntu为例
 		cmd = exec.Command("sudo", "cp", certPath, "/usr/local/share/ca-certificates/")
 		if err := cmd.Run(); err != nil {
-			return err
+			return fmt.Errorf("复制证书失败: %v", err)
 		}
 		cmd = exec.Command("sudo", "update-ca-certificates")
 	default:
-		return fmt.Errorf("unsupported platform: %s", runtime.GOOS)
+		return fmt.Errorf("不支持的操作系统: %s", runtime.GOOS)
 	}
 
 	output, err := cmd.CombinedOutput()
-	fmt.Println("install cert: ", string(output))
-	return err
+	if err != nil {
+		return fmt.Errorf("证书安装失败: %v\n输出: %s", err, string(output))
+	}
+
+	return nil
 }

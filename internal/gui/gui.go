@@ -24,6 +24,7 @@ func Gui() {
 
 	content := initView(myApp, myWindow)
 	initTray(myApp, myWindow)
+	go asyncTask(myWindow)
 
 	myWindow.SetContent(content)
 	myWindow.ShowAndRun()

@@ -11,6 +11,32 @@ import (
 	"proxypin-go/internal/util"
 )
 
+func asyncTask(myWindow fyne.Window) {
+	file, err := assets.ReadFile("server.crt")
+	if err != nil {
+		dialog.ShowError(err, myWindow)
+		return
+	}
+	b, err := system.CheckExistCert(file)
+	if b {
+		return
+	}
+
+	dialog.ShowConfirm("警告", "证书未安装,请先安装", func(b bool) {
+		if !b {
+			dialog.ShowInformation("警告", "请先安装证书", myWindow)
+			return
+		}
+
+		err = system.InstallCert(file)
+		if err != nil {
+			dialog.ShowError(err, myWindow)
+		} else {
+			dialog.ShowInformation("", "安装成功", myWindow)
+		}
+	}, myWindow)
+}
+
 func btnOnClick(myWindow fyne.Window, btn *widget.Button) func() {
 	return func() {
 		text := btn.Text
