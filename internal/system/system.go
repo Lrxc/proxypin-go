@@ -8,7 +8,7 @@ import (
 	"proxypin-go/internal/config"
 )
 
-func SysProxy() {
+func SysProxyOn() {
 	if !config.Conf.System.AutoEnable {
 		return
 	}
@@ -18,9 +18,17 @@ func SysProxy() {
 	if err := gosysproxy.SetGlobalProxy(addr); err != nil {
 		fmt.Errorf("system proxy err: %v", err)
 	}
-	fmt.Println("system proxy set: ", addr)
+	fmt.Println("system proxy on: ", addr)
 
 	go ExitFunc()
+}
+
+func SysProxyOff() {
+	if !config.Conf.System.AutoEnable {
+		return
+	}
+
+	fmt.Println("system proxy off")
 }
 
 func ExitFunc() {
@@ -29,6 +37,6 @@ func ExitFunc() {
 	s := <-c
 	fmt.Println("exit: ", s)
 
-	gosysproxy.Off() //关闭代理
+	SysProxyOff()
 	os.Exit(0)
 }

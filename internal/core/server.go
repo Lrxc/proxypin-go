@@ -7,7 +7,7 @@ import (
 	"github.com/elazarl/goproxy"
 	"log"
 	"net/http"
-	resources "proxypin-go/cert"
+	resources "proxypin-go/assets"
 	"proxypin-go/internal/config"
 )
 

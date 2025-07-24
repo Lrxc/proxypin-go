@@ -12,3 +12,7 @@ rule:
     enable: true
     source: https://www.baidu.com
     target: https://www.bing.com
+  - name: masking
+    enable: true
+    source: https://192.168.3.174/dm
+    target: http://192.168.3.174:9009/dm

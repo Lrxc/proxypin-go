@@ -3,6 +3,13 @@ proxypin-go
 # 功能列表:
 - 网络拦截重定向
 
+# 打包
+```shell
+go install fyne.io/fyne/v2/cmd/fyne@latest # 安装 fyne cmd
+fyne package -os darwin -icon assets/logo.jpg # mac加入图标打包
+fyne package -os linux -icon assets/logo.jpg  # linux加入图标打包
+fyne package -os windows -icon assets/logo.jpg # windows加入图标打包
+```
 
 # 使用:
 1. 安装 cert/server.crt 到 受信任的根证书颁发机构  
