@@ -1,18 +1,17 @@
 system:
-  host: 127.0.0.1
-  port: 10086
-  auto_enable: true
-
+    host: 127.0.0.1
+    port: "10086"
+    autoenable: false
 rule:
-  - name: dbf
-    enable: true
-    source: https://192.168.3.103:443/api
-    target: http://127.0.0.1:9999/api
-  - name: baidu
-    enable: true
-    source: https://www.baidu.com
-    target: https://www.bing.com
-  - name: masking
-    enable: true
-    source: https://192.168.3.174/dm
-    target: http://192.168.3.174:9009/dm
+    - enable: true
+      name: dbf
+      source: https://192.168.3.103:443/api
+      target: http://127.0.0.1:9999/api
+    - enable: true
+      name: baidu
+      source: https://www.baidu.com
+      target: https://www.bing.com
+    - enable: true
+      name: masking
+      source: https://192.168.3.174/dm
+      target: http://192.168.3.174:9009/dm

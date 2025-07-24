@@ -14,7 +14,7 @@ func SysProxyOn() {
 	}
 
 	// 启动时设置系统代理
-	addr := fmt.Sprintf("%s:%s", config.Conf.System.Host, config.Conf.System.Port)
+	addr := fmt.Sprintf("%s:%d", config.Conf.System.Host, config.Conf.System.Port)
 	if err := gosysproxy.SetGlobalProxy(addr); err != nil {
 		fmt.Errorf("system proxy err: %v", err)
 	}
@@ -28,6 +28,7 @@ func SysProxyOff() {
 		return
 	}
 
+	gosysproxy.Off()
 	fmt.Println("system proxy off")
 }
 
