@@ -1,13 +1,14 @@
 package gui
 
 import (
-	"encoding/json"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
+	"proxypin-go/assets"
 	"proxypin-go/internal/config"
 	"proxypin-go/internal/system"
+	"proxypin-go/internal/util"
 )
 
 func btnOnClick(myWindow fyne.Window, btn *widget.Button) func() {
@@ -21,7 +22,7 @@ func btnOnClick(myWindow fyne.Window, btn *widget.Button) func() {
 			}
 			Proxy_Status.Set(PROXY_STATUS_RUNNING)
 			btn.Text = PROXY_BTN_STOP
-			btn.Importance = widget.SuccessImportance //高亮颜色
+			btn.Importance = widget.HighImportance //高亮颜色
 		}
 		if text == PROXY_BTN_STOP {
 			err := system.SysProxyOff() //关闭代理
@@ -36,15 +37,42 @@ func btnOnClick(myWindow fyne.Window, btn *widget.Button) func() {
 	}
 }
 
-func helpClick(myWindow fyne.Window) func() {
+func settingClick(myWindow fyne.Window, itme *widget.ToolbarAction) func() {
 	return func() {
-		dialog.ShowInformation("success", "", myWindow)
+		// 创建子菜单项
+		menuItems := []*fyne.MenuItem{
+			fyne.NewMenuItem("安装证书", settingInstallCa(myWindow)),
+			fyne.NewMenuItem("关于", func() {
+				dialog.ShowInformation("关于", "v1.0.1", myWindow)
+			}),
+		}
+
+		// 创建弹出菜单
+		popUp := widget.NewPopUpMenu(
+			fyne.NewMenu("", menuItems...),
+			myWindow.Canvas(),
+		)
+
+		// 计算按钮位置
+		object := itme.ToolbarObject()
+		popUp.ShowAtPosition(object.Position().Add(fyne.NewPos(0, object.Size().Height+5)))
 	}
 }
 
-func settingClick(myApp fyne.App) func() {
+func settingInstallCa(myWindow fyne.Window) func() {
 	return func() {
+		file, err := assets.ReadFile("server.crt")
+		if err != nil {
+			dialog.ShowError(err, myWindow)
+			return
+		}
 
+		err = system.InstallCert(file)
+		if err != nil {
+			dialog.ShowError(err, myWindow)
+			return
+		}
+		dialog.ShowInformation("success", "", myWindow)
 	}
 }
 
@@ -56,10 +84,10 @@ func editRuleClick(myApp fyne.App) func() {
 		newWin.CenterOnScreen() //居中显示
 
 		entry := widget.NewMultiLineEntry()
-		entry.SetText(prettyJSON(config.Conf.Rule))
+		entry.SetText(util.PrettyJSON(config.Conf.Rule))
 		entry.Wrapping = fyne.TextWrapWord //启用自动换行
 
-		saveBtn := widget.NewButton("Save", func() {
+		saveBtn := widget.NewButton("保存", func() {
 			err := config.WriteJson(entry.Text)
 			if err != nil {
 				dialog.ShowError(err, newWin)
@@ -67,8 +95,8 @@ func editRuleClick(myApp fyne.App) func() {
 				dialog.ShowInformation("success", "", newWin)
 			}
 		})
-		refreshBtn := widget.NewButton("Format", func() {
-			entry.SetText(prettyJSON(entry.Text))
+		refreshBtn := widget.NewButton("格式化", func() {
+			entry.SetText(util.PrettyJSON(entry.Text))
 		})
 
 		btn := container.NewHBox(saveBtn, refreshBtn)
@@ -77,13 +105,4 @@ func editRuleClick(myApp fyne.App) func() {
 		newWin.SetContent(content)
 		newWin.Show()
 	}
-}
-
-func prettyJSON(raw any) string {
-	if s, ok := raw.(string); ok {
-		json.Unmarshal([]byte(s), &raw)
-	}
-
-	pretty, _ := json.MarshalIndent(raw, "", "  ")
-	return string(pretty)
 }

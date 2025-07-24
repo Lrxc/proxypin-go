@@ -58,11 +58,13 @@ var (
 )
 
 func initView(myApp fyne.App, myWindow fyne.Window) *fyne.Container {
+	settingItme := widget.NewToolbarAction(theme.SettingsIcon(), nil)
+	settingItme.OnActivated = settingClick(myWindow, settingItme)
+
 	toolbar := widget.NewToolbar(
-		widget.NewToolbarAction(theme.DocumentCreateIcon(), editRuleClick(myApp)),
-		widget.NewToolbarAction(theme.SettingsIcon(), settingClick(myApp)),
+		widget.NewToolbarAction(theme.FileTextIcon(), editRuleClick(myApp)),
 		widget.NewToolbarSpacer(),
-		widget.NewToolbarAction(theme.HelpIcon(), helpClick(myWindow)),
+		settingItme,
 	)
 
 	// 创建一个标签
@@ -71,6 +73,7 @@ func initView(myApp fyne.App, myWindow fyne.Window) *fyne.Container {
 	// 创建一个标签(绑定数据,自动更新)
 	statusLabel := widget.NewLabelWithData(Proxy_Status)
 
+	//开始按钮
 	startBtn := widget.NewButton(PROXY_BTN_START, nil)
 	startBtn.OnTapped = btnOnClick(myWindow, startBtn)
 
@@ -80,13 +83,13 @@ func initView(myApp fyne.App, myWindow fyne.Window) *fyne.Container {
 	top := container.NewVBox(
 		toolbar,
 		thickLine,
-		cus.EmptyLayout(0, 50),
-		container.NewHBox(cus.EmptyLayout(120, 0), statusTitle, statusLabel), //嵌套一个水平布局,并且居中
-		cus.EmptyLayout(0, 50),
+		cus.NewLayout(0, 50),
+		container.NewHBox(cus.NewLayout(120, 0), statusTitle, statusLabel), //嵌套一个水平布局,并且居中
+		cus.NewLayout(0, 50),
 	)
 	content := container.NewBorder(
 		top,
-		cus.EmptyLayout(200, 100), cus.EmptyLayout(100, 100), cus.EmptyLayout(100, 100),
+		cus.NewLayout(200, 100), cus.NewLayout(100, 100), cus.NewLayout(100, 100),
 		startBtn,
 	)
 	return content

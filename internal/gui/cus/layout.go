@@ -5,6 +5,6 @@ import (
 	"fyne.io/fyne/v2/container"
 )
 
-func EmptyLayout(w, h float32) *fyne.Container {
+func NewLayout(w, h float32) *fyne.Container {
 	return container.NewGridWrap(fyne.NewSize(w, h))
 }
