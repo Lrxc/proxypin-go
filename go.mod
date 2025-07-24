@@ -10,6 +10,7 @@ require (
 	github.com/elazarl/goproxy v1.7.2
 	github.com/fsnotify/fsnotify v1.8.0
 	github.com/spf13/viper v1.20.1
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -52,7 +53,6 @@ require (
 	golang.org/x/net v0.35.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 //使用fork仓库

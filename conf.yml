@@ -1,7 +1,7 @@
 system:
     host: 127.0.0.1
-    port: "10086"
-    autoenable: false
+    port: 10086
+    auto_enable: true
 rule:
     - enable: true
       name: dbf

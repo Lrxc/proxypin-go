@@ -6,38 +6,39 @@ import (
 	"os"
 	"os/signal"
 	"proxypin-go/internal/config"
+	"sync"
 )
 
-func SysProxyOn() {
-	if !config.Conf.System.AutoEnable {
-		return
-	}
+var Once sync.Once
 
+func SysProxyOn() error {
 	// 启动时设置系统代理
 	addr := fmt.Sprintf("%s:%d", config.Conf.System.Host, config.Conf.System.Port)
-	if err := gosysproxy.SetGlobalProxy(addr); err != nil {
+	err := gosysproxy.SetGlobalProxy(addr)
+	if err != nil {
 		fmt.Errorf("system proxy err: %v", err)
+		return err
 	}
 	fmt.Println("system proxy on: ", addr)
 
 	go ExitFunc()
+	return nil
 }
 
-func SysProxyOff() {
-	if !config.Conf.System.AutoEnable {
-		return
-	}
-
-	gosysproxy.Off()
-	fmt.Println("system proxy off")
+func SysProxyOff() error {
+	err := gosysproxy.Off()
+	fmt.Println("system proxy off: ", err == nil)
+	return err
 }
 
 func ExitFunc() {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, os.Kill)
-	s := <-c
-	fmt.Println("exit: ", s)
+	Once.Do(func() {
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, os.Interrupt, os.Kill)
+		s := <-c
+		fmt.Println("exit: ", s)
 
-	SysProxyOff()
-	os.Exit(0)
+		SysProxyOff()
+		os.Exit(0)
+	})
 }

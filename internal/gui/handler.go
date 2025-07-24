@@ -10,19 +10,27 @@ import (
 	"proxypin-go/internal/system"
 )
 
-func btnOnClick(btn *widget.Button) func() {
+func btnOnClick(myWindow fyne.Window, btn *widget.Button) func() {
 	return func() {
 		text := btn.Text
-		if text == config.PROXY_BTN_START {
-			Proxy_Status.Set(config.PROXY_STATUS_RUNNING)
-			system.SysProxyOn()
-			btn.Text = config.PROXY_BTN_STOP
+		if text == PROXY_BTN_START {
+			err := system.SysProxyOn()
+			if err != nil {
+				dialog.ShowError(err, myWindow)
+				return
+			}
+			Proxy_Status.Set(PROXY_STATUS_RUNNING)
+			btn.Text = PROXY_BTN_STOP
 			btn.Importance = widget.SuccessImportance //高亮颜色
 		}
-		if text == config.PROXY_BTN_STOP {
-			Proxy_Status.Set(config.PROXY_STATUS_OFF)
-			system.SysProxyOff() //关闭代理
-			btn.Text = config.PROXY_BTN_START
+		if text == PROXY_BTN_STOP {
+			err := system.SysProxyOff() //关闭代理
+			if err != nil {
+				dialog.ShowError(err, myWindow)
+				return
+			}
+			Proxy_Status.Set(PROXY_STATUS_OFF)
+			btn.Text = PROXY_BTN_START
 			btn.Importance = widget.MediumImportance
 		}
 	}
@@ -44,7 +52,7 @@ func editRuleClick(myApp fyne.App) func() {
 	return func() {
 		//打开一个新窗口
 		newWin := myApp.NewWindow(AppName)
-		newWin.Resize(fyne.NewSize(800, 600))
+		newWin.Resize(fyne.NewSize(400, 500))
 		newWin.CenterOnScreen() //居中显示
 
 		entry := widget.NewMultiLineEntry()

@@ -1,4 +1,4 @@
-package config
+package gui
 
 const (
 	PROXY_TITLE     = "系统代理: "

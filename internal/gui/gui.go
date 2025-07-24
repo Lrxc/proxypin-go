@@ -3,14 +3,15 @@ package gui
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/driver/desktop"
-	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"image/color"
 	"proxypin-go/assets"
-	"proxypin-go/internal/config"
+	"proxypin-go/internal/gui/cus"
 )
 
 var AppName = "ProxyPin-Go"
@@ -65,24 +66,27 @@ func initView(myApp fyne.App, myWindow fyne.Window) *fyne.Container {
 	)
 
 	// 创建一个标签
-	statusTitle := widget.NewLabel(config.PROXY_TITLE)
-	Proxy_Status.Set(config.PROXY_STATUS_OFF)
+	statusTitle := widget.NewLabel(PROXY_TITLE)
+	Proxy_Status.Set(PROXY_STATUS_OFF)
 	// 创建一个标签(绑定数据,自动更新)
 	statusLabel := widget.NewLabelWithData(Proxy_Status)
 
-	startBtn := widget.NewButton(config.PROXY_BTN_START, nil)
-	startBtn.OnTapped = btnOnClick(startBtn)
-	// 设置按钮的最小和固定大小
-	startBtn.Resize(fyne.NewSize(200, 200))
+	startBtn := widget.NewButton(PROXY_BTN_START, nil)
+	startBtn.OnTapped = btnOnClick(myWindow, startBtn)
 
-	content := container.NewVBox(
+	//横线
+	thickLine := canvas.NewRectangle(color.NRGBA{R: 128, G: 128, B: 128, A: 255})
+
+	top := container.NewVBox(
 		toolbar,
-		//嵌套一个水平布局
-		container.NewHBox(statusTitle, statusLabel),
+		thickLine,
+		cus.EmptyLayout(0, 50),
+		container.NewHBox(cus.EmptyLayout(120, 0), statusTitle, statusLabel), //嵌套一个水平布局,并且居中
+		cus.EmptyLayout(0, 50),
 	)
-	content = container.NewBorder(
-		content,
-		NewMySpacer(100, 100), layout.NewSpacer(), layout.NewSpacer(),
+	content := container.NewBorder(
+		top,
+		cus.EmptyLayout(200, 100), cus.EmptyLayout(100, 100), cus.EmptyLayout(100, 100),
 		startBtn,
 	)
 	return content
