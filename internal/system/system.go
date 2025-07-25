@@ -13,7 +13,7 @@ import (
 
 var (
 	Once    sync.Once
-	SigChan = make(chan os.Signal, 1)
+	SigChan = make(chan os.Signal, 10)
 )
 
 func SysProxyOn() error {
