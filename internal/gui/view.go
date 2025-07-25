@@ -36,8 +36,7 @@ func Gui() {
 func initTray(myApp fyne.App, myWindow fyne.Window) {
 	// 创建自定义托盘图标
 	icon := &fyne.StaticResource{
-		StaticName:    "tray.jpg",
-		StaticContent: assets.Read("tray.jpg"),
+		StaticContent: assets.Read("logo.png"),
 	}
 
 	if desk, ok := myApp.(desktop.App); ok {

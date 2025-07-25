@@ -8,7 +8,7 @@ proxypin-go
 
 ```shell
 go install fyne.io/tools/cmd/fyne@latest # 安装 fyne cmd
-fyne package --release --id lrxc.proxy -os windows -icon assets/logo.jpg # windows加入图标打包
+fyne package --release --id lrxc.proxy -os windows -icon assets/logo.png # windows加入图标打包
 ```
 
 包太大,剔除多余并压缩
