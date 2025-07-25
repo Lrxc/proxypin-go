@@ -1,7 +1,7 @@
 package system
 
 import (
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"os/exec"
 	"runtime"
 	"syscall"
@@ -13,7 +13,7 @@ func IsAdmin() bool {
 		// Windows: 尝试执行需要管理员权限的操作
 		cmd := exec.Command("net", "session")
 		out, err := cmd.CombinedOutput()
-		fmt.Println("isAdmin", string(out))
+		log.Println("isAdmin", string(out))
 		return err == nil
 	case "linux", "darwin":
 		// Unix-like: 检查UID

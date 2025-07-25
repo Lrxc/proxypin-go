@@ -13,10 +13,17 @@ import (
 
 type Config struct {
 	System System
+	Proxy  Proxy
 	Rule   []Rule
 }
 
 type System struct {
+	MinExit     bool
+	Https       bool
+	GlobalProxy bool
+}
+
+type Proxy struct {
 	Host       string
 	Port       int
 	AutoEnable bool `mapstructure:"auto_enable" yaml:"auto_enable"`
@@ -38,8 +45,8 @@ func InitConfig() {
 	exit := util.FileExist(confname)
 	if !exit {
 		json := &Config{
-			System: System{Host: "127.0.0.1", Port: 10086, AutoEnable: true},
-			Rule:   []Rule{{Enable: true, Name: "baidu", Source: "http://www.baidu.com/", Target: "http://www.bing.com/"}},
+			Proxy: Proxy{Host: "127.0.0.1", Port: 10086, AutoEnable: true},
+			Rule:  []Rule{{Enable: true, Name: "baidu", Source: "https://www.baidu.com/", Target: "http://www.bing.com/"}},
 		}
 		//写入默认配置文件
 		WriteConf(json)

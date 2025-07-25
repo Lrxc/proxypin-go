@@ -9,6 +9,7 @@ require (
 	github.com/Trisia/gosysproxy v1.1.0
 	github.com/elazarl/goproxy v1.7.2
 	github.com/fsnotify/fsnotify v1.8.0
+	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.20.1
 	gopkg.in/yaml.v3 v3.0.1
 )

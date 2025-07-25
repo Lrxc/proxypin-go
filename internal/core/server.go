@@ -5,34 +5,65 @@ import (
 	"crypto/x509"
 	"fmt"
 	"github.com/elazarl/goproxy"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	resources "proxypin-go/assets"
 	"proxypin-go/internal/config"
 )
 
-func StartServer() {
+var server *http.Server
+
+func StartServer(https bool) {
 	proxy := goproxy.NewProxyHttpServer()
 	//proxy.Verbose = true
 	//proxy.AllowHTTP2 = true
 	proxy.Logger = SilentLog{}
 
-	// 设置CA证书
-	if err := SetCA(); err != nil {
-		log.Fatalf("https certificate err: %v", err)
+	if https {
+		// 设置CA证书
+		if err := SetCA(); err != nil {
+			log.Fatalf("https certificate err: %v", err)
+		}
+
+		// 处理HTTPS连接
+		proxy.OnRequest().HandleConnect(goproxy.AlwaysMitm)
 	}
 
-	// 处理HTTPS连接
-	proxy.OnRequest().HandleConnect(goproxy.AlwaysMitm)
 	// 请求
 	proxy.OnRequest().DoFunc(ReqHandler)
 	// 相应
 	proxy.OnResponse().DoFunc(ResHandler)
 
-	addr := fmt.Sprintf("%s:%d", config.Conf.System.Host, config.Conf.System.Port)
-	fmt.Println("server listen: ", addr)
-	fmt.Println("start successful!")
-	log.Fatal(http.ListenAndServe(addr, proxy))
+	addr := fmt.Sprintf("%s:%d", config.Conf.Proxy.Host, config.Conf.Proxy.Port)
+	log.Info("server listen: ", addr)
+
+	server = &http.Server{Addr: addr, Handler: proxy}
+	server.ListenAndServe()
+	//log.Fatal(http.ListenAndServe(addr, proxy))
+}
+
+func ReStartServer(b bool) error {
+	if server == nil {
+		return nil
+	}
+
+	err := StopServer()
+	go StartServer(b)
+
+	return err
+}
+
+func StopServer() error {
+	if server == nil {
+		return fmt.Errorf("服务未启动")
+	}
+
+	if err := server.Close(); err != nil {
+		return err
+	}
+
+	log.Info("server stopped")
+	return nil
 }
 
 func SetCA() error {
@@ -59,4 +90,5 @@ func SetCA() error {
 type SilentLog struct{}
 
 func (e SilentLog) Printf(format string, v ...any) {
+	log.Infof("goproxy: "+format, v...)
 }

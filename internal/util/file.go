@@ -5,6 +5,20 @@ import (
 	"path/filepath"
 )
 
+// 创建父级路径
+func CreateParentFile(filename string) {
+	//当前绝对路径
+	path, _ := filepath.Abs(filename)
+	//上级路径
+	path = filepath.Join(path, "../")
+	//创建目录
+	err := os.MkdirAll(path, 0666)
+
+	if err != nil {
+		panic(err)
+	}
+}
+
 func FileExist(filename string) bool {
 	abs, _ := filepath.Abs(filename)
 

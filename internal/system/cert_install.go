@@ -31,7 +31,7 @@ func CheckExistCert(certPath string) (bool, error) {
 	switch runtime.GOOS {
 	case "windows":
 		// Windows - 使用 certutil 检查证书
-		cmd := exec.Command("certutil", "-verifystore", "Root")
+		cmd := exec.Command("certutil", "-user", "-verifystore", "Root")
 		output, err := cmd.CombinedOutput()
 		if err != nil {
 			return false, fmt.Errorf("检查证书存储失败: %v", err)
@@ -64,7 +64,8 @@ func InstallCert(certPath string) error {
 
 	switch runtime.GOOS {
 	case "windows":
-		cmd = exec.Command("cmd", "/c", "start", "", certPath)
+		//cmd = exec.Command("cmd", "/c", "start", "", certPath)
+		cmd = exec.Command("certutil", "-user", "-addstore", "-f", "Root", certPath)
 	case "darwin":
 		cmd = exec.Command("open", certPath)
 	case "linux":
@@ -73,9 +74,9 @@ func InstallCert(certPath string) error {
 		return fmt.Errorf("不支持的操作系统: %s", runtime.GOOS)
 	}
 
-	output, err := cmd.CombinedOutput()
+	_, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("证书安装失败: %v\n输出: %s", err, string(output))
+		return err
 	}
 	return nil
 }

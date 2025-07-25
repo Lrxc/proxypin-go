@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"github.com/elazarl/goproxy"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"net/url"
 	"proxypin-go/internal/config"
@@ -10,7 +11,7 @@ import (
 )
 
 func ReqHandler(r *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {
-	fmt.Printf("req: %s %s\n", r.Method, r.URL.String())
+	log.Debug("req: %s %s\n", r.Method, r.URL.String())
 
 	for _, s := range config.Conf.Rule {
 		if !s.Enable {
@@ -30,7 +31,7 @@ func ReqHandler(r *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Re
 			r.URL = newURL
 			r.Host = newURL.Host
 
-			fmt.Printf("redirect: %s %s\n", r.Method, r.URL.String())
+			log.Info("redirect: %s %s\n", r.Method, r.URL.String())
 			return r, nil
 		}
 	}
