@@ -11,7 +11,7 @@ import (
 )
 
 func ReqHandler(r *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {
-	log.Debug("req: %s %s\n", r.Method, r.URL.String())
+	log.Info("req: %s %s\n", r.Method, r.URL.String())
 
 	for _, s := range config.Conf.Rule {
 		if !s.Enable {

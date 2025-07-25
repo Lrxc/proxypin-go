@@ -9,6 +9,7 @@ import (
 func init() {
 	system.IsAlreadyRunning()
 	config.InitConfig()
+	config.InitLog()
 }
 
 func main() {
