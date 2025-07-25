@@ -6,7 +6,9 @@ import (
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/driver/desktop"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"image/color"
@@ -24,7 +26,7 @@ func Gui() {
 
 	content := initView(myApp, myWindow)
 	initTray(myApp, myWindow)
-	go asyncTask(myWindow)
+	go initTask(myWindow)
 
 	myWindow.SetContent(content)
 	myWindow.ShowAndRun()
@@ -59,20 +61,28 @@ var (
 )
 
 func initView(myApp fyne.App, myWindow fyne.Window) *fyne.Container {
-	settingItme := widget.NewToolbarAction(theme.SettingsIcon(), nil)
-	settingItme.OnActivated = settingClick(myWindow, settingItme)
+	setItem := widget.NewToolbarAction(theme.SettingsIcon(), nil)
+	setItem.OnActivated = setOnClick(myWindow, setItem)
 
 	toolbar := widget.NewToolbar(
-		widget.NewToolbarAction(theme.FileTextIcon(), editRuleClick(myApp)),
+		widget.NewToolbarAction(theme.FileTextIcon(), editRuleOnClick(myApp)),
 		widget.NewToolbarSpacer(),
-		settingItme,
+		setItem,
+		widget.NewToolbarAction(theme.HelpIcon(), func() {
+			dialog.ShowInformation("关于", "v1.0.1", myWindow)
+		}),
 	)
+
+	caBtn := widget.NewButton(CA_STATUS, nil)
+	caBtn.OnTapped = caOnClick(myWindow, caBtn)
+	caBtn.Importance = widget.WarningImportance
 
 	// 创建一个标签
 	statusTitle := widget.NewLabel(PROXY_TITLE)
 	Proxy_Status.Set(PROXY_STATUS_OFF)
 	// 创建一个标签(绑定数据,自动更新)
 	statusLabel := widget.NewLabelWithData(Proxy_Status)
+	statusLabel.Importance = widget.WarningImportance
 
 	//开始按钮
 	startBtn := widget.NewButton(PROXY_BTN_START, nil)
@@ -85,6 +95,7 @@ func initView(myApp fyne.App, myWindow fyne.Window) *fyne.Container {
 		toolbar,
 		thickLine,
 		cus.NewLayout(0, 50),
+		container.NewHBox(layout.NewSpacer(), caBtn, layout.NewSpacer()),
 		container.NewHBox(cus.NewLayout(120, 0), statusTitle, statusLabel), //嵌套一个水平布局,并且居中
 		cus.NewLayout(0, 50),
 	)

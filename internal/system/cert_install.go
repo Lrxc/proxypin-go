@@ -39,7 +39,6 @@ func CheckExistCert(certPath string) (bool, error) {
 
 		fingerprint := util.GetSHA1(cert)
 		return bytes.Contains(output, []byte(fingerprint)), nil
-
 	case "darwin": // macOS
 		// macOS - 使用 security 检查证书
 		cmd := exec.Command("security", "find-certificate", "-c", cert.Subject.CommonName, "-a", "/Library/Keychains/System.keychain")
@@ -61,6 +60,27 @@ func CheckExistCert(certPath string) (bool, error) {
 }
 
 func InstallCert(certPath string) error {
+	var cmd *exec.Cmd
+
+	switch runtime.GOOS {
+	case "windows":
+		cmd = exec.Command("cmd", "/c", "start", "", certPath)
+	case "darwin":
+		cmd = exec.Command("open", certPath)
+	case "linux":
+		cmd = exec.Command("xdg-open", certPath)
+	default:
+		return fmt.Errorf("不支持的操作系统: %s", runtime.GOOS)
+	}
+
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("证书安装失败: %v\n输出: %s", err, string(output))
+	}
+	return nil
+}
+
+func InstallCertWithRoot(certPath string) error {
 	var cmd *exec.Cmd
 
 	switch runtime.GOOS {

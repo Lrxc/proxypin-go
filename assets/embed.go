@@ -29,7 +29,7 @@ func ReadFile(scriptPath string) (string, error) {
 		return "", err
 	}
 
-	filePath := "/data/" + scriptPath
+	filePath := filepath.Join("data", scriptPath)
 	// 确保目录存在
 	dir := filepath.Dir(filePath)
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {

@@ -7,11 +7,21 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"proxypin-go/assets"
 	"proxypin-go/internal/config"
+	"proxypin-go/internal/core"
 	"proxypin-go/internal/system"
 	"proxypin-go/internal/util"
 )
 
-func asyncTask(myWindow fyne.Window) {
+func initTask(myWindow fyne.Window) {
+	//checkCert(myWindow)
+
+	//自动启动代理任务
+	if config.Conf.System.AutoEnable {
+		go core.StartServer()
+	}
+}
+
+func checkCert(myWindow fyne.Window) {
 	file, err := assets.ReadFile("server.crt")
 	if err != nil {
 		dialog.ShowError(err, myWindow)
@@ -23,18 +33,29 @@ func asyncTask(myWindow fyne.Window) {
 	}
 
 	dialog.ShowConfirm("警告", "证书未安装,请先安装", func(b bool) {
-		if !b {
-			dialog.ShowInformation("警告", "请先安装证书", myWindow)
+		if b {
+			err = system.InstallCert(file)
+			if err != nil {
+				dialog.ShowError(err, myWindow)
+			}
+		}
+	}, myWindow)
+}
+
+func caOnClick(myWindow fyne.Window, btn *widget.Button) func() {
+	return func() {
+		file, err := assets.ReadFile("server.crt")
+		if err != nil {
+			dialog.ShowError(err, myWindow)
 			return
 		}
-
 		err = system.InstallCert(file)
 		if err != nil {
 			dialog.ShowError(err, myWindow)
 		} else {
-			dialog.ShowInformation("", "安装成功", myWindow)
+			btn.Hide()
 		}
-	}, myWindow)
+	}
 }
 
 func btnOnClick(myWindow fyne.Window, btn *widget.Button) func() {
@@ -48,7 +69,7 @@ func btnOnClick(myWindow fyne.Window, btn *widget.Button) func() {
 			}
 			Proxy_Status.Set(PROXY_STATUS_RUNNING)
 			btn.Text = PROXY_BTN_STOP
-			btn.Importance = widget.HighImportance //高亮颜色
+			btn.Importance = widget.WarningImportance //高亮颜色
 		}
 		if text == PROXY_BTN_STOP {
 			err := system.SysProxyOff() //关闭代理
@@ -63,14 +84,11 @@ func btnOnClick(myWindow fyne.Window, btn *widget.Button) func() {
 	}
 }
 
-func settingClick(myWindow fyne.Window, itme *widget.ToolbarAction) func() {
+func setOnClick(myWindow fyne.Window, itme *widget.ToolbarAction) func() {
 	return func() {
 		// 创建子菜单项
 		menuItems := []*fyne.MenuItem{
 			fyne.NewMenuItem("安装证书", settingInstallCa(myWindow)),
-			fyne.NewMenuItem("关于", func() {
-				dialog.ShowInformation("关于", "v1.0.1", myWindow)
-			}),
 		}
 
 		// 创建弹出菜单
@@ -98,11 +116,10 @@ func settingInstallCa(myWindow fyne.Window) func() {
 			dialog.ShowError(err, myWindow)
 			return
 		}
-		dialog.ShowInformation("success", "", myWindow)
 	}
 }
 
-func editRuleClick(myApp fyne.App) func() {
+func editRuleOnClick(myApp fyne.App) func() {
 	return func() {
 		//打开一个新窗口
 		newWin := myApp.NewWindow(AppName)

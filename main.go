@@ -2,7 +2,6 @@ package main
 
 import (
 	"proxypin-go/internal/config"
-	"proxypin-go/internal/core"
 	"proxypin-go/internal/gui"
 	"proxypin-go/internal/system"
 )
@@ -13,6 +12,5 @@ func init() {
 }
 
 func main() {
-	go core.StartServer()
 	gui.Gui()
 }
