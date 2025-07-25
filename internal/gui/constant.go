@@ -1,6 +1,11 @@
 package gui
 
 const (
+	APP_WIDTH  = 400
+	APP_HEIGHT = 500
+)
+
+const (
 	PROXY_TITLE = "系统代理: "
 	HTTPS_TITLE = "HTTPS: "
 

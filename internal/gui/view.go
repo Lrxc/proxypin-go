@@ -15,15 +15,17 @@ import (
 	"proxypin-go/internal/config"
 	"proxypin-go/internal/constant"
 	"proxypin-go/internal/gui/cus"
+	"proxypin-go/internal/server"
 	"proxypin-go/internal/system"
 	"syscall"
 )
 
 func Gui() {
 	myApp := app.New()
-	myWindow := myApp.NewWindow(constant.AppName) //主窗口
-	myWindow.Resize(fyne.NewSize(400, 500))       //窗口大小
-	myWindow.CenterOnScreen()                     //窗口居中
+	myWindow := myApp.NewWindow(constant.AppName)        //主窗口
+	myWindow.Resize(fyne.NewSize(APP_WIDTH, APP_HEIGHT)) //窗口大小
+	myWindow.CenterOnScreen()                            //窗口居中
+	myWindow.SetFixedSize(true)                          //禁止最大化窗口
 
 	content := initView(myApp, myWindow)
 	initTray(myApp, myWindow)
@@ -65,7 +67,6 @@ var (
 	Proxy_Status = binding.NewString()
 	Https_Status = binding.NewString()
 	caBtn        *widget.Button
-	startBtn     *widget.Button
 )
 
 func initView(myApp fyne.App, myWindow fyne.Window) *fyne.Container {
@@ -103,11 +104,15 @@ func initView(myApp fyne.App, myWindow fyne.Window) *fyne.Container {
 	httpsLabel.Importance = widget.WarningImportance
 
 	//开始按钮
-	startBtn = widget.NewButton(PROXY_BTN_START, nil)
+	startBtn := widget.NewButton(PROXY_BTN_START, nil)
 	startBtn.OnTapped = startOnClick(myWindow, startBtn)
 
 	//横线
 	thickLine := canvas.NewRectangle(color.NRGBA{R: 128, G: 128, B: 128, A: 255})
+
+	entry := widget.NewMultiLineEntry()
+	entry.Wrapping = fyne.TextWrapWord //启用自动换行
+	server.LogFilter.Register(entry)
 
 	top := container.NewVBox(
 		toolbar,
@@ -121,7 +126,9 @@ func initView(myApp fyne.App, myWindow fyne.Window) *fyne.Container {
 	)
 	content := container.NewBorder(
 		top,
-		cus.NewLayout(0, 100), cus.NewLayout(100, 0), cus.NewLayout(100, 0),
+		container.NewVBox(cus.NewLayout(0, 50), entry),
+		cus.NewLayout(120, 0),
+		cus.NewLayout(120, 0),
 		startBtn,
 	)
 	return content

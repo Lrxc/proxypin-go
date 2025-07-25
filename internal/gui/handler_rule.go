@@ -14,7 +14,7 @@ func editRuleOnClick(myApp fyne.App) func() {
 	return func() {
 		//打开一个新窗口
 		newWin := myApp.NewWindow(constant.AppName)
-		newWin.Resize(fyne.NewSize(400, 500))
+		newWin.Resize(fyne.NewSize(APP_WIDTH, APP_HEIGHT))
 		newWin.CenterOnScreen() //居中显示
 
 		entry := widget.NewMultiLineEntry()

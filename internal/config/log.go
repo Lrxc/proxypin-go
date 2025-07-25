@@ -14,7 +14,7 @@ func InitLog() {
 		Filename:   constant.LogPath,
 		MaxSize:    500, // megabytes
 		MaxBackups: 3,
-		MaxAge:     28,   //days
+		MaxAge:     7,    //days
 		Compress:   true, // disabled by default
 	}
 	//同时将日志写入文件和控制台
