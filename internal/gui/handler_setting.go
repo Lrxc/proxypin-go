@@ -36,16 +36,16 @@ func settingHttpsOnClick(myWindow fyne.Window, itme *fyne.MenuItem) func() {
 	return func() {
 		itme.Checked = !itme.Checked
 
-		if itme.Checked {
-			Https_Status.Set(PROXY_STATUS_RUNNING)
-		} else {
-			Https_Status.Set(PROXY_STATUS_OFF)
-		}
-
 		err := server.ReStartServer(itme.Checked)
 		if err != nil {
 			dialog.ShowError(err, myWindow)
 			return
+		}
+
+		if itme.Checked {
+			Https_Status.Set(PROXY_STATUS_RUNNING)
+		} else {
+			Https_Status.Set(PROXY_STATUS_OFF)
 		}
 
 		config.Conf.System.Https = itme.Checked

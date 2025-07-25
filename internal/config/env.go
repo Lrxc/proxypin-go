@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/fsnotify/fsnotify"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
 	"os"
@@ -72,7 +73,7 @@ func ReadConf(msg string) {
 		panic(fmt.Errorf("unmarshal conf failed, err:%s \n", err))
 	}
 
-	fmt.Printf("config %s ok\n", msg)
+	log.Info("config ", msg)
 }
 
 func WriteJson(msg string) error {

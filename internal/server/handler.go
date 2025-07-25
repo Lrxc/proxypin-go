@@ -11,7 +11,7 @@ import (
 )
 
 func ReqHandler(r *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {
-	log.Info("req: %s %s\n", r.Method, r.URL.String())
+	log.Infof("req: %s %s\n", r.Method, r.URL.String())
 
 	for _, s := range config.Conf.Rule {
 		if !s.Enable {
@@ -31,7 +31,7 @@ func ReqHandler(r *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Re
 			r.URL = newURL
 			r.Host = newURL.Host
 
-			log.Info("redirect: %s %s\n", r.Method, r.URL.String())
+			log.Infof("redirect: %s %s\n", r.Method, r.URL.String())
 			return r, nil
 		}
 	}

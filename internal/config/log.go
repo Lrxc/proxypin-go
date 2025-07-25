@@ -2,17 +2,21 @@ package config
 
 import (
 	log "github.com/sirupsen/logrus"
+	"gopkg.in/natefinch/lumberjack.v2"
 	"io"
 	"os"
 	"proxypin-go/internal/constant"
-	"proxypin-go/internal/util"
+	"time"
 )
 
 func InitLog() {
-	util.CreateParentFile(constant.LogPath)
-
-	//保存文件
-	file, _ := os.OpenFile(constant.LogPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	file := &lumberjack.Logger{
+		Filename:   constant.LogPath,
+		MaxSize:    500, // megabytes
+		MaxBackups: 3,
+		MaxAge:     28,   //days
+		Compress:   true, // disabled by default
+	}
 	//同时将日志写入文件和控制台
 	writer := io.MultiWriter(file, os.Stdout)
 
@@ -20,9 +24,10 @@ func InitLog() {
 	log.SetLevel(log.InfoLevel)
 	//日志格式化
 	log.SetFormatter(&log.TextFormatter{
-		ForceColors:   true, //显示颜色
-		FullTimestamp: true, //完整时间
+		ForceColors:     false,
+		TimestampFormat: time.DateTime,
 	})
+
 	//写入文件
 	log.SetOutput(writer)
 }

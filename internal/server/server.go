@@ -90,5 +90,5 @@ func SetCA() error {
 type SilentLog struct{}
 
 func (e SilentLog) Printf(format string, v ...any) {
-	log.Infof("goproxy: "+format, v...)
+	//log.Infof("goproxy: "+format, v...)
 }
