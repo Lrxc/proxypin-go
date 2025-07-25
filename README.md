@@ -27,11 +27,9 @@ upx -9 masking-upgrade.exe
 
 # 使用:
 
-1. 安装 cert/server.crt 到 受信任的根证书颁发机构  
-   <img src="docs/import.png" alt="import.png" style="zoom: 50%;" />
-2. 配置[conf.yml](conf.yml)
-3. 启动程序,查看系统代理是否生效  
-   <img src="docs/sys_proxy.png" alt="sys_proxy.png" style="zoom: 50%;" />
+1. 安装证书
+2. 开启https
+3. 启动程序,查看系统代理是否生效
 
 # 自己生成证书[可选]
 
