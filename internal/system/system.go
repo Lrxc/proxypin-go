@@ -8,9 +8,13 @@ import (
 	"os/signal"
 	"proxypin-go/internal/config"
 	"sync"
+	"syscall"
 )
 
-var Once sync.Once
+var (
+	Once    sync.Once
+	SigChan = make(chan os.Signal, 1)
+)
 
 func SysProxyOn() error {
 	// 启动时设置系统代理
@@ -34,9 +38,8 @@ func SysProxyOff() error {
 
 func ExitFunc() {
 	Once.Do(func() {
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, os.Interrupt, os.Kill)
-		s := <-c
+		signal.Notify(SigChan, os.Interrupt, os.Kill, syscall.SIGTERM)
+		s := <-SigChan
 		log.Warn("exit: ", s)
 
 		SysProxyOff()

@@ -15,6 +15,8 @@ import (
 	"proxypin-go/internal/config"
 	"proxypin-go/internal/constant"
 	"proxypin-go/internal/gui/cus"
+	"proxypin-go/internal/system"
+	"syscall"
 )
 
 func Gui() {
@@ -53,6 +55,7 @@ func initTray(myApp fyne.App, myWindow fyne.Window) {
 		if config.Conf.System.MinExit {
 			myWindow.Hide()
 		} else {
+			system.SigChan <- syscall.SIGTERM
 			myApp.Quit()
 		}
 	})
