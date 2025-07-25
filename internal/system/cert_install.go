@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"proxypin-go/internal/util"
 	"runtime"
+	"syscall"
 )
 
 // 检查证书是否已存在于根证书存储中
@@ -30,8 +31,8 @@ func CheckExistCert(certPath string) (bool, error) {
 
 	switch runtime.GOOS {
 	case "windows":
-		// Windows - 使用 certutil 检查证书
 		cmd := exec.Command("certutil", "-user", "-verifystore", "Root")
+		cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true} //隐藏一闪的黑窗口
 		output, err := cmd.CombinedOutput()
 		if err != nil {
 			return false, fmt.Errorf("检查证书存储失败: %v", err)
@@ -66,6 +67,7 @@ func InstallCert(certPath string) error {
 	case "windows":
 		//cmd = exec.Command("cmd", "/c", "start", "", certPath)
 		cmd = exec.Command("certutil", "-user", "-addstore", "-f", "Root", certPath)
+		cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true} //隐藏一闪的黑窗口
 	case "darwin":
 		cmd = exec.Command("open", certPath)
 	case "linux":

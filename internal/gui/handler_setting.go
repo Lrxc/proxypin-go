@@ -5,7 +5,7 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"proxypin-go/assets"
 	"proxypin-go/internal/config"
-	"proxypin-go/internal/core"
+	"proxypin-go/internal/server"
 	"proxypin-go/internal/system"
 )
 
@@ -42,7 +42,7 @@ func settingHttpsOnClick(myWindow fyne.Window, itme *fyne.MenuItem) func() {
 			Https_Status.Set(PROXY_STATUS_OFF)
 		}
 
-		err := core.ReStartServer(itme.Checked)
+		err := server.ReStartServer(itme.Checked)
 		if err != nil {
 			dialog.ShowError(err, myWindow)
 			return

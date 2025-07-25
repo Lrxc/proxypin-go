@@ -6,13 +6,14 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
 	"proxypin-go/internal/config"
+	"proxypin-go/internal/constant"
 	"proxypin-go/internal/util"
 )
 
 func editRuleOnClick(myApp fyne.App) func() {
 	return func() {
 		//打开一个新窗口
-		newWin := myApp.NewWindow(AppName)
+		newWin := myApp.NewWindow(constant.AppName)
 		newWin.Resize(fyne.NewSize(400, 500))
 		newWin.CenterOnScreen() //居中显示
 

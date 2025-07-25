@@ -24,9 +24,8 @@ type System struct {
 }
 
 type Proxy struct {
-	Host       string
-	Port       int
-	AutoEnable bool `mapstructure:"auto_enable" yaml:"auto_enable"`
+	Host string
+	Port int
 }
 
 type Rule struct {
@@ -45,7 +44,7 @@ func InitConfig() {
 	exit := util.FileExist(confname)
 	if !exit {
 		json := &Config{
-			Proxy: Proxy{Host: "127.0.0.1", Port: 10086, AutoEnable: true},
+			Proxy: Proxy{Host: "127.0.0.1", Port: 10086},
 			Rule:  []Rule{{Enable: true, Name: "baidu", Source: "https://www.baidu.com/", Target: "http://www.bing.com/"}},
 		}
 		//写入默认配置文件

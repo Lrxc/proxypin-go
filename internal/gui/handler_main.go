@@ -6,7 +6,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"proxypin-go/assets"
 	"proxypin-go/internal/config"
-	"proxypin-go/internal/core"
+	"proxypin-go/internal/server"
 	"proxypin-go/internal/system"
 )
 
@@ -23,13 +23,6 @@ func initTask(myWindow fyne.Window) {
 
 	if config.Conf.System.Https {
 		Https_Status.Set(PROXY_STATUS_RUNNING)
-	}
-
-	if config.Conf.Proxy.AutoEnable {
-		go core.StartServer(config.Conf.System.Https)
-
-		startBtn.Text = PROXY_BTN_STOP
-		startBtn.Importance = widget.WarningImportance //高亮颜色
 	}
 
 	checkCert(myWindow)
@@ -125,13 +118,13 @@ func startOnClick(myWindow fyne.Window, btn *widget.Button) func() {
 	return func() {
 		text := btn.Text
 		if text == PROXY_BTN_START {
-			go core.StartServer(config.Conf.System.Https)
+			go server.StartServer(config.Conf.System.Https)
 
 			btn.Text = PROXY_BTN_STOP
 			btn.Importance = widget.WarningImportance //高亮颜色
 		}
 		if text == PROXY_BTN_STOP {
-			err := core.StopServer() //关闭代理
+			err := server.StopServer() //关闭代理
 			if err != nil {
 				dialog.ShowError(err, myWindow)
 				return
